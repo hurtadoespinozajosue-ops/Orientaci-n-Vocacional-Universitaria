@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orienta UAGRM | Orientación vocacional</title>
+<style>
+:root{--blue:#174a8b;--blue2:#2563eb;--sky:#eaf3ff;--ink:#17243a;--muted:#66758b;--line:#dce5f0;--bg:#f5f8fc}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f3f7ff,#f9fbff);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+header{background:linear-gradient(120deg,#123c76,#2563eb);color:white;padding:24px 18px}
+.wrap{max-width:920px;margin:auto}.brand{font-weight:800;letter-spacing:.08em;font-size:13px;opacity:.9}.hero h1{font-size:clamp(26px,5vw,42px);line-height:1.12;margin:10px 0}.hero p{max-width:680px;color:#e4edff;margin:0}
+main{padding:22px 14px 48px}.card{background:white;border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,30px);box-shadow:0 12px 35px #163d7110;margin:0 auto 18px}
+h2{margin:0 0 10px;color:var(--blue)}.muted{color:var(--muted)}.small{font-size:13px}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;background:var(--blue2);color:white;font-size:15px}.btn.secondary{background:#edf3fb;color:var(--blue)}.btn:disabled{opacity:.4;cursor:not-allowed}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+label.field{display:block;font-weight:650;margin:14px 0 6px}input,select{width:100%;padding:12px;border:1px solid #cbd7e6;border-radius:10px;font:inherit;background:white}
+.progress{height:9px;background:#e8eef7;border-radius:99px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,#3b82f6,#38bdf8);width:0;transition:.25s}
+.question{font-size:clamp(18px,3vw,22px);font-weight:700;margin:18px 0 20px}.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.choice input{position:absolute;opacity:0}.choice label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line);border-radius:12px;padding:12px 5px;cursor:pointer;min-height:88px;text-align:center;font-size:13px;color:#52627a}.choice b{font-size:20px;color:var(--blue)}.choice input:checked+label{background:var(--sky);border:2px solid var(--blue2);color:var(--blue);padding:11px 4px}
+.choice label:hover{border-color:#91b7ef}.dimtag{display:inline-block;background:#edf4ff;color:#24569a;border-radius:99px;padding:5px 10px;font-size:12px;font-weight:700}
+.resultgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.score{border:1px solid var(--line);border-radius:13px;padding:12px}.bar{height:8px;background:#edf1f7;border-radius:99px;margin-top:8px;overflow:hidden}.bar span{display:block;height:100%;background:#3b82f6}.career{border:1px solid var(--line);padding:13px;border-radius:13px;margin:9px 0}.career h3{margin:0 0 5px;font-size:16px;color:var(--blue)}.hidden{display:none!important}footer{text-align:center;color:#718096;padding:20px;font-size:12px}
+@media(max-width:560px){.choices{grid-template-columns:repeat(5,1fr);gap:5px}.choice label{padding:8px 2px;min-height:78px;font-size:11px}.choice b{font-size:18px}.resultgrid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><div class="wrap hero"><div class="brand">ORIENTA · UAGRM</div><h1>Descubre tu vocación.<br>Explora tu futuro.</h1><p>Un recorrido para reconocer tus intereses y explorar carreras universitarias que podrían conectar contigo.</p></div></header>
+<main class="wrap">
+<section id="intro" class="card">
+<h2>Bienvenido/a a tu orientación vocacional</h2>
+<p>Responde con sinceridad. No existen respuestas correctas o incorrectas: queremos conocer lo que realmente te interesa.</p>
+<p class="muted small">Tiempo estimado: 10–15 minutos · 64 afirmaciones · 8 áreas de interés</p>
+<label class="field">Nombre o código (opcional)</label><input id="name" placeholder="Tu nombre o código">
+<label class="field">Edad</label><input id="age" type="number" min="12" max="99" placeholder="Ej. 17">
+<label class="field">Curso de secundaria</label><select id="course"><option value="">Selecciona (opcional)</option><option>1.º de secundaria</option><option>2.º de secundaria</option><option>3.º de secundaria</option><option>4.º de secundaria</option><option>5.º de secundaria</option><option>6.º de secundaria</option><option>Otro</option></select>
+<label class="field">¿Qué carreras tienes en mente? (opcional)</label><input id="known" placeholder="Puedes escribir una o varias">
+<p class="small muted">Tus respuestas se procesan en este navegador; esta página no las envía a un servidor.</p>
+<button class="btn" id="startBtn" type="button">Comenzar cuestionario →</button>
+</section>
+<section id="quiz" class="card hidden">
+<div class="row"><span class="dimtag" id="dim"></span><span class="muted small" id="count"></span></div>
+<div class="progress"><span id="progress"></span></div>
+<div class="question" id="question"></div>
+<div class="choices" id="choices"></div>
+<p class="muted small" style="margin-top:14px">1 Nada · 2 Poco · 3 Indiferente/no sé · 4 Bastante · 5 Muchísimo</p>
+<div class="row" style="margin-top:20px"><button class="btn secondary" id="back" type="button">← Anterior</button><button class="btn" id="next" type="button">Siguiente →</button></div>
+</section>
+<section id="results" class="card hidden">
+<h2>Tu mapa de intereses</h2><p id="greeting"></p><p class="muted">Los puntajes muestran intereses declarados, no capacidad ni destino profesional.</p>
+<div id="scores" class="resultgrid"></div>
+<h2 style="margin-top:25px">Áreas que podrías explorar</h2><p class="muted small">Las recomendaciones son aproximadas. Varias carreras combinan más de un perfil.</p><div id="careers"></div>
+<h2 style="margin-top:25px">Siguientes pasos</h2><ul><li>Revisa los planes de estudio y las materias de las carreras sugeridas.</li><li>Conversa con estudiantes y profesionales de esas áreas.</li><li>Explora prácticas, actividades o visitas universitarias.</li><li>Considera tus valores, contexto y posibilidades, además del resultado.</li></ul>
+<div class="row" style="margin-top:20px"><button class="btn" id="printBtn" type="button">Imprimir / guardar PDF</button><button class="btn secondary" id="restartBtn" type="button">Volver a empezar</button></div>
+<p class="small muted">Instrumento exploratorio preliminar, no validado psicométricamente. No determina ni prescribe una carrera.</p>
+</section>
+</main><footer>ORIENTA UAGRM · Material de exploración vocacional</footer>
+<script>
+const dims=[
+{name:"R · Técnico-práctico",items:["Construir, reparar o ensamblar objetos y equipos.","Aprender a usar herramientas, máquinas o instrumentos.","Resolver problemas prácticos haciendo pruebas.","Trabajar con materiales para crear algo funcional.","Comprender cómo funcionan motores o dispositivos.","Realizar actividades que impliquen movimiento y destreza manual.","Participar en proyectos de construcción o mantenimiento.","Aprender procedimientos técnicos paso a paso."]},
+{name:"I · Científico-investigativo",items:["Investigar por qué ocurre un fenómeno natural o humano.","Analizar datos para encontrar explicaciones.","Realizar experimentos y observar sus resultados.","Comprender el funcionamiento del cuerpo humano.","Estudiar microorganismos, sustancias o procesos biológicos.","Resolver problemas que requieren razonamiento lógico.","Buscar evidencias antes de aceptar una explicación.","Leer o investigar temas científicos por curiosidad."]},
+{name:"A · Creativo-artístico",items:["Crear dibujos, diseños, fotografías o piezas audiovisuales.","Inventar ideas originales para comunicar un mensaje.","Expresar emociones o ideas mediante el arte.","Proponer soluciones estéticas y novedosas.","Crear contenido para redes, campañas o medios.","Modificar espacios, objetos o imágenes para mejorarlos.","Disfrutar actividades donde no existe una única solución.","Experimentar con colores, formas, sonidos o palabras."]},
+{name:"S · Social-ayuda",items:["Escuchar a alguien y ayudarle a organizar sus ideas.","Explicar un tema a un compañero que no lo comprende.","Acompañar a personas que atraviesan dificultades.","Participar en actividades de apoyo a la comunidad.","Comprender cómo se sienten o actúan otras personas.","Trabajar en equipo para alcanzar una meta común.","Promover hábitos saludables o bienestar.","Enseñar, orientar o facilitar el aprendizaje de otros."]},
+{name:"E · Liderazgo-emprendimiento",items:["Organizar un equipo para realizar una actividad.","Presentar una idea y convencer a otros con argumentos.","Coordinar proyectos, eventos o iniciativas.","Crear un emprendimiento o desarrollar un producto/servicio.","Tomar decisiones cuando hay varias alternativas.","Negociar acuerdos o resolver diferencias entre personas.","Asumir responsabilidades para alcanzar resultados.","Proponer metas y motivar a un grupo."]},
+{name:"C · Organización-administración",items:["Ordenar información, documentos o registros.","Planificar tareas y controlar fechas de entrega.","Trabajar con números, presupuestos o inventarios.","Seguir procedimientos claros y comprobar detalles.","Registrar datos con precisión y evitar errores.","Organizar recursos para que una actividad funcione.","Usar hojas de cálculo o sistemas de información.","Comparar información para tomar decisiones ordenadas."]},
+{name:"N · Naturaleza-ambiente",items:["Conocer plantas, animales y ecosistemas.","Participar en actividades de cuidado ambiental.","Investigar problemas de contaminación o conservación.","Trabajar en campo observando el entorno natural.","Comprender cómo se producen alimentos o recursos naturales.","Proponer formas de cuidar el agua, suelo o bosques.","Realizar actividades relacionadas con agricultura o producción sostenible.","Aprender sobre biodiversidad y vida silvestre."]},
+{name:"J · Comunicación-jurídico-humanístico",items:["Debatir temas sociales, políticos o culturales con argumentos.","Comprender normas, derechos y responsabilidades.","Redactar textos, informes o mensajes claros.","Investigar hechos desde distintas perspectivas.","Conocer idiomas y culturas diferentes.","Analizar conflictos sociales y buscar acuerdos justos.","Comunicar información a públicos diversos.","Comprender cómo se organizan las sociedades y sus instituciones."]}
+];
+const mapping={
+"R · Técnico-práctico":["Construcciones Civiles","Electricidad Industrial","Electrónica","Mecánica Industrial","Mecánica de Producción","Mecánica Automotriz","Ing. Mecánica","Ing. Electromecánica","Ing. Eléctrica","Ing. Electrónica","Ing. en Materiales","Ing. Metalurgia","Ing. en Robótica"],
+"I · Científico-investigativo":["Medicina","Bioquímica","Biología","Ing. Química","Ing. en Alimentos","Medicina Veterinaria y Zootecnia","Ing. Ambiental","Ciencias Ambientales","Ing. Agronómica"],
+"A · Creativo-artístico":["Arte","Diseño Integral","Arquitectura","Ciencias de la Comunicación"],
+"S · Social-ayuda":["Psicología","Enfermería","Trabajo Social","Ciencias de la Educación","Actividad Física","Medicina","Odontología"],
+"E · Liderazgo-emprendimiento":["Administración de Empresas","Ing. Comercial","Comercio Internacional","Economía","Ing. Financiera","Gestión del Turismo","Cs. Políticas y Adm. Pública"],
+"C · Organización-administración":["Contaduría Pública","Auditoría","Inf. y Control de Gestión","Banca Seguros y Valores","Administración de Empresas","Ing. Financiera"],
+"N · Naturaleza-ambiente":["Ing. Ambiental","Ing. Agronómica","Ing. Forestal","Cs. Ambientales","Biología","Veterinaria y Zootecnia","Ing. en Agrimensura"],
+"J · Comunicación-jurídico-humanístico":["Derecho","Relaciones Internacionales","Cs. Políticas y Adm. Pública","Sociología","Cs. de la Comunicación","Trabajo Social","Lenguas/Filología","Gestión del Turismo"]
+};
+let all=[],answers=Array(64).fill(null),idx=0;
+dims.forEach((d,di)=>d.items.forEach((q,qi)=>all.push({q,di,qi})));
+function start(){document.getElementById('intro').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');render()}
+function render(){let x=all[idx];document.getElementById('dim').textContent=dims[x.di].name;document.getElementById('count').textContent=`Pregunta ${idx+1} de 64`;document.getElementById('progress').style.width=((idx+1)/64*100)+'%';document.getElementById('question').textContent=(idx+1)+'. '+x.q;
+let labels=["Nada","Poco","Indiferente","Bastante","Muchísimo"];document.getElementById('choices').innerHTML=labels.map((l,i)=>`<div class="choice"><input type="radio" name="a" id="a${i+1}" value="${i+1}" ${answers[idx]===i+1?'checked':''} onchange="answers[${idx}]=${i+1}"><label for="a${i+1}"><b>${i+1}</b>${l}</label></div>`).join('');
+document.getElementById('back').disabled=idx===0;document.getElementById('next').textContent=idx===63?'Ver resultados ✓':'Siguiente →'}
+function move(n){if(n===1&&answers[idx]===null){alert('Selecciona una respuesta para continuar.');return}if(idx===63&&n===1){finish();return}idx=Math.max(0,Math.min(63,idx+n));render()}
+function finish(){let scores=dims.map((d,i)=>answers.slice(i*8,i*8+8).reduce((a,b)=>a+b,0));let ranked=scores.map((s,i)=>({s,i,name:dims[i].name})).sort((a,b)=>b.s-a.s);
+document.getElementById('quiz').classList.add('hidden');document.getElementById('results').classList.remove('hidden');document.getElementById('greeting').textContent='Resultado'+(document.getElementById('name').value?' de '+document.getElementById('name').value:'')+'. Tus áreas más altas son: '+ranked.slice(0,3).map(x=>x.name).join(', ')+'.';
+document.getElementById('scores').innerHTML=ranked.map(x=>`<div class="score"><div class="row"><b>${x.name}</b><b>${x.s}/40</b></div><div class="bar"><span style="width:${x.s/40*100}%"></span></div><div class="small muted">${x.s>=33?'Interés alto':x.s>=25?'Interés presente':x.s>=17?'Interés bajo/moderado':'Interés poco expresado'}</div></div>`).join('');
+let top=ranked.slice(0,3);document.getElementById('careers').innerHTML=top.map(x=>`<div class="career"><h3>${x.name} · ${x.s}/40</h3><p>${mapping[x.name].join(' · ')}</p></div>`).join('');
+}
+document.getElementById('startBtn').addEventListener('click',start);
+document.getElementById('back').addEventListener('click',()=>move(-1));
+document.getElementById('next').addEventListener('click',()=>move(1));
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+document.getElementById('restartBtn').addEventListener('click',()=>location.reload());
+</script></body></html>
